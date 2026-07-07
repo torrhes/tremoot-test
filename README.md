@@ -1,96 +1,74 @@
-# Painel de Despacho — Dispatch Board
+# Dispatch Board
 
-Aplicação React + TypeScript de escala de recursos (veículos, equipes, técnicos),
-com arrastar-e-soltar, timeline estilo Gantt virtualizada e arquitetura
-offline-first com atualizações otimistas e resolução de conflitos de sincronização.
+A React + TypeScript resource scheduling application for managing vehicles, crews, and technicians, featuring drag-and-drop scheduling, a virtualized Gantt-style timeline, and an offline-first architecture with optimistic updates and sync conflict resolution.
 
-## Rodando o projeto
+## Running the Project
 
 ```bash
 npm install
 npm run dev
 ```
 
-Abra o endereço mostrado pelo Vite (geralmente `http://localhost:5173`).
+Open the URL displayed by Vite (usually `http://localhost:5173`).
 
 ```bash
-npm run build      # build de produção (tsc + vite build)
-npm run typecheck  # apenas checagem de tipos
+npm run build      # Production build (tsc + vite build)
+npm run typecheck  # Type checking only
 ```
 
-## Onde está cada requisito
+---
 
-### 1. Drag-and-drop scheduling
+## Requirements Mapping
 
-- `src/components/UnassignedJobs.tsx` — cada serviço na fila é `draggable`;
-  o `dataTransfer` carrega `{ kind: 'job', jobId }`.
-- `src/components/Timeline/ResourceRow.tsx` — cada linha (recurso) é o alvo
-  de drop. No `onDrop`, calcula o minuto exato sob o cursor a partir de
-  `getBoundingClientRect()` da própria pista, sem depender de `scrollLeft`
-  manualmente (o browser já resolve isso).
-- `src/components/Timeline/AssignmentCard.tsx` — cartões já atribuídos também
-  são arrastáveis (para mover entre recursos/horários) e redimensionáveis
-  pela borda direita (Pointer Events, para alterar a duração do serviço).
-- Todo movimento é ajustado (`snapToGrid`) para a grade de 15 minutos.
+### 1. Drag-and-Drop Scheduling
 
-### 2. Timeline / Gantt com virtualização
+- `src/components/UnassignedJobs.tsx` — each job in the queue is draggable and stores `{ kind: 'job', jobId }` in `dataTransfer`.
+- `src/components/Timeline/ResourceRow.tsx` — each resource row acts as a drop target. On drop, the exact minute under the cursor is calculated using the row's `getBoundingClientRect()`, without manually handling `scrollLeft`.
+- `src/components/Timeline/AssignmentCard.tsx` — assigned jobs can be dragged between resources and time slots. Cards are also resizable from the right edge using Pointer Events to adjust job duration.
+- All movements are snapped to a 15-minute grid using `snapToGrid`.
 
-- `src/components/Timeline/TimelineView.tsx` usa `react-window`
-  (`FixedSizeList`) para virtualizar verticalmente as linhas de recursos —
-  com centenas de recursos, só as linhas visíveis (+ overscan do próprio
-  react-window) existem no DOM.
-- Virtualização horizontal é feita à mão em `ResourceRow.tsx`: o horizonte
-  do board é de 14 dias, mas cada linha só monta os cartões de atribuição
-  cuja janela de tempo intersecta o intervalo atualmente visível
-  (`src/store/viewportStore.ts`), calculado a partir do `scrollLeft` real
-  do contêiner. Isso é o mesmo princípio usado por bibliotecas de Gantt
-  para lidar com milhares de itens: nunca renderizar o que está fora da
-  viewport, independente da largura total do conteúdo.
-- A coluna de nomes dos recursos fica fixa (`position: sticky`) enquanto a
-  área de tempo rola horizontalmente; o cabeçalho de horas acompanha o
-  scroll via `transform: translateX(...)`.
+### 2. Virtualized Timeline / Gantt View
 
-### 3. Offline-first com atualizações otimistas e conflitos
+- `src/components/Timeline/TimelineView.tsx` uses `react-window` (`FixedSizeList`) to virtualize resource rows vertically. Even with hundreds of resources, only visible rows (plus react-window overscan) exist in the DOM.
+- Horizontal virtualization is implemented manually in `ResourceRow.tsx`. The board supports a 14-day planning horizon, but each row only renders assignments that intersect the currently visible time window stored in `src/store/viewportStore.ts`, calculated from the container's actual `scrollLeft`.
+- This follows the same principle used by large-scale Gantt libraries: never render content outside the viewport, regardless of the total timeline width.
+- Resource names remain fixed using `position: sticky`, while the timeline scrolls horizontally. The time header stays synchronized using `transform: translateX(...)`.
 
-- `src/db/db.ts` — todo o estado (recursos, serviços, atribuições, fila de
-  sincronização, conflitos) vive em IndexedDB via Dexie. A UI lê e escreve
-  sempre localmente primeiro; nunca espera uma resposta de rede para
-  atualizar a tela.
-- `src/services/syncEngine.ts` — cada escrita (`assignJob`, `moveAssignment`,
-  `unassign`) grava local e imediatamente enfileira uma `SyncOp` com a
-  versão-base da atribuição. A fila é drenada em FIFO sempre que há
-  conectividade, com retry e backoff exponencial em falhas de rede.
-- `src/api/mockServer.ts` simula um backend real: latência de rede,
-  falhas transitórias (~8%) e — importante — um "despachante fantasma" que
-  edita atribuições do lado do servidor de tempos em tempos, simulando um
-  colega em outro dispositivo. Isso gera conflitos genuínos de concorrência
-  otimista (comparação de `version`), não um conflito só encenado.
-- Quando o servidor rejeita um push por divergência de versão, o registro
-  entra em `src/components/ConflictModal.tsx`, mostrando as duas versões
-  (local e remota) lado a lado para o usuário escolher qual prevalece.
-- O botão **Online/Offline** na barra superior alterna `navigator.onLine`
-  para fins de demonstração: desligue-o, arraste alguns serviços (as
-  mudanças aparecem na hora, com um indicador "pendente" no cartão),
-  religue e observe a fila sendo sincronizada — e, ocasionalmente, um
-  conflito aparecendo para resolução.
+### 3. Offline-First Architecture with Optimistic Updates and Conflict Resolution
 
-## Estrutura
+- `src/db/db.ts` — all application state (resources, jobs, assignments, sync queue, and conflicts) is stored in IndexedDB through Dexie. The UI always reads and writes locally first, without waiting for network responses.
+- `src/services/syncEngine.ts` — operations such as `assignJob`, `moveAssignment`, and `unassign` immediately update local data and enqueue a `SyncOp` containing the assignment's base version. The queue is processed in FIFO order whenever connectivity is available, with retries and exponential backoff for failures.
+- `src/api/mockServer.ts` simulates a real backend, including network latency, transient failures (~8%), and a background "ghost dispatcher" that periodically edits assignments on the server side, simulating another user working from a different device.
+- These concurrent modifications generate genuine optimistic concurrency conflicts through version comparison rather than artificial conflict simulations.
+- When the server rejects an update due to a version mismatch, the record appears in `src/components/ConflictModal.tsx`, displaying local and remote versions side by side so the user can decide which version should prevail.
+- The **Online/Offline** toggle in the top bar is provided for demonstration purposes. Disable connectivity, perform scheduling actions, and observe immediate local updates marked as pending. Re-enable connectivity to watch the sync queue process and occasionally surface conflicts for resolution.
 
-```
+---
+
+## Project Structure
+
+```text
 src/
-  api/mockServer.ts        backend simulado (latência, falhas, edições concorrentes)
-  services/syncEngine.ts   fila de sincronização, retry/backoff, detecção de conflito
-  db/db.ts                 esquema IndexedDB (Dexie)
-  store/scheduleStore.ts   estado da aplicação (zustand), ponte UI ↔ DB ↔ sync
-  store/viewportStore.ts   janela de tempo visível (para virtualização horizontal)
-  components/Timeline/     grade de recursos, cabeçalho de tempo, cartões
-  components/              fila de serviços, barra de status, modal de conflito
+  api/mockServer.ts        Simulated backend (latency, failures, concurrent edits)
+  services/syncEngine.ts   Sync queue, retry/backoff, conflict detection
+  db/db.ts                 IndexedDB schema (Dexie)
+  store/scheduleStore.ts   Application state (Zustand), UI ↔ DB ↔ Sync bridge
+  store/viewportStore.ts   Visible time window (horizontal virtualization)
+  components/Timeline/     Resource grid, timeline header, assignment cards
+  components/              Job queue, status bar, conflict modal
 ```
 
-## Notas de design
+---
 
-Paleta e tipografia seguem uma linguagem de "console de despacho": fundo
-grafite escuro, acento âmbar de sinalização, dados em monoespaçada
-(JetBrains Mono) e títulos em Space Grotesk — pensado para uma tela que
-fica aberta o dia inteiro numa central de operações.
-# tremoot-test
+## Design Notes
+
+The visual language follows the style of a modern dispatch console:
+
+- Dark graphite background
+- Amber accent color for operational signals and status indicators
+- JetBrains Mono for operational data and scheduling information
+- Space Grotesk for headings and interface hierarchy
+
+The interface was designed for environments where dispatchers and operators keep the application open throughout the day, prioritizing clarity, information density, and usability during continuous monitoring.
+
+---
