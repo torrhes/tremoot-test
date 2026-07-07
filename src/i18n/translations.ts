@@ -1,4 +1,4 @@
-import type { Locale } from './types'
+import type { Locale } from './types';
 
 const pt = {
   'app.title': 'Painel de Despacho',
@@ -11,21 +11,24 @@ const pt = {
   'view.singleDay': 'Dia',
   'view.dayLabel': 'Visualizar',
 
-  'sync.hint': 'Edições salvam na hora no dispositivo · envio ao servidor em segundo plano',
+  'sync.hint':
+    'Edições salvam na hora no dispositivo · envio ao servidor em segundo plano',
   'sync.legendTitle': 'Como funciona a sincronização',
   'sync.synced': 'Sincronizado',
   'sync.savedLocally': 'Salvo localmente',
   'sync.conflict': 'Conflito',
-  'sync.allSynced': 'Tudo sincronizado',
+  'sync.allSynced': 'Sincronizado',
   'sync.sending': 'Enviando ao servidor…',
   'sync.savedCount': '{{count}} salva localmente',
   'sync.savedCountPlural': '{{count}} salvas localmente',
   'sync.conflictCount': '{{count}} conflito',
   'sync.conflictCountPlural': '{{count}} conflitos',
   'sync.offlineMode': 'Modo offline',
-  'sync.offlinePendingTitle': 'Alterações guardadas localmente. Serão enviadas quando voltar online.',
+  'sync.offlinePendingTitle':
+    'Alterações guardadas localmente. Serão enviadas quando voltar online.',
   'sync.pendingTitle': 'Enviando alterações pendentes ao servidor…',
-  'sync.toggleTitle': 'Alternar conectividade simulada para testar o modo offline',
+  'sync.toggleTitle':
+    'Alternar conectividade simulada para testar o modo offline',
   'sync.online': 'Online',
   'sync.offline': 'Offline',
   'sync.badge.synced': 'Sincronizado',
@@ -34,16 +37,20 @@ const pt = {
   'sync.badge.conflict': 'Conflito',
   'sync.badge.error': 'Falhou',
   'sync.help.synced': 'Esta atribuição está igual no servidor.',
-  'sync.help.pending': 'Salva no seu dispositivo. Será enviada ao servidor quando estiver online.',
+  'sync.help.pending':
+    'Salva no seu dispositivo. Será enviada ao servidor quando estiver online.',
   'sync.help.syncing': 'Enviando alteração ao servidor agora…',
-  'sync.help.conflict': 'Outra pessoa alterou o mesmo horário. Resolva o conflito para continuar.',
-  'sync.help.error': 'Não foi possível enviar. Tentaremos de novo automaticamente.',
+  'sync.help.conflict':
+    'Outra pessoa alterou o mesmo horário. Resolva o conflito para continuar.',
+  'sync.help.error':
+    'Não foi possível enviar. Tentaremos de novo automaticamente.',
   'sync.editNote':
     'Alterações aparecem na escala na hora. O envio ao servidor acontece em segundo plano quando você estiver online.',
 
   'tray.title': 'Fila de serviços',
   'tray.queue': 'Fila',
-  'tray.hint': 'Clique para editar · arraste até uma jornada na escala para atribuir.',
+  'tray.hint':
+    'Clique para editar · arraste até uma jornada na escala para atribuir.',
   'tray.empty': 'Nenhum serviço pendente. Bom trabalho.',
   'tray.expand': 'Expandir fila de serviços',
   'tray.collapse': 'Recolher fila de serviços',
@@ -102,8 +109,8 @@ const pt = {
   'conflict.keepLocal': 'Manter sua versão',
   'conflict.keepRemote': 'Usar versão do servidor',
   'conflict.editedBy': 'editado por {{name}}',
-  'conflict.queue': '+{{count}} outro(s) conflito(s) na fila',
-} as const
+  'conflict.queue': '+{{count}} outro(s) conflito(s) na fila'
+} as const;
 
 const en: Record<keyof typeof pt, string> = {
   'app.title': 'Dispatch Board',
@@ -116,7 +123,8 @@ const en: Record<keyof typeof pt, string> = {
   'view.singleDay': 'Day',
   'view.dayLabel': 'View',
 
-  'sync.hint': 'Edits save instantly on device · server sync runs in the background',
+  'sync.hint':
+    'Edits save instantly on device · server sync runs in the background',
   'sync.legendTitle': 'How synchronization works',
   'sync.synced': 'Synced',
   'sync.savedLocally': 'Saved locally',
@@ -128,7 +136,8 @@ const en: Record<keyof typeof pt, string> = {
   'sync.conflictCount': '{{count}} conflict',
   'sync.conflictCountPlural': '{{count}} conflicts',
   'sync.offlineMode': 'Offline mode',
-  'sync.offlinePendingTitle': 'Changes saved locally. They will be sent when you are back online.',
+  'sync.offlinePendingTitle':
+    'Changes saved locally. They will be sent when you are back online.',
   'sync.pendingTitle': 'Sending pending changes to the server…',
   'sync.toggleTitle': 'Toggle simulated connectivity to test offline mode',
   'sync.online': 'Online',
@@ -139,11 +148,14 @@ const en: Record<keyof typeof pt, string> = {
   'sync.badge.conflict': 'Conflict',
   'sync.badge.error': 'Failed',
   'sync.help.synced': 'This assignment matches the server.',
-  'sync.help.pending': 'Saved on your device. It will be sent to the server when you are online.',
+  'sync.help.pending':
+    'Saved on your device. It will be sent to the server when you are online.',
   'sync.help.syncing': 'Sending change to the server now…',
-  'sync.help.conflict': 'Someone else changed the same slot. Resolve the conflict to continue.',
+  'sync.help.conflict':
+    'Someone else changed the same slot. Resolve the conflict to continue.',
   'sync.help.error': 'Could not send. We will retry automatically.',
-  'sync.editNote': 'Changes appear on the board immediately. Server sync runs in the background when online.',
+  'sync.editNote':
+    'Changes appear on the board immediately. Server sync runs in the background when online.',
 
   'tray.title': 'Service queue',
   'tray.queue': 'Queue',
@@ -206,28 +218,35 @@ const en: Record<keyof typeof pt, string> = {
   'conflict.keepLocal': 'Keep your version',
   'conflict.keepRemote': 'Use server version',
   'conflict.editedBy': 'edited by {{name}}',
-  'conflict.queue': '+{{count}} more conflict(s) in queue',
-}
+  'conflict.queue': '+{{count}} more conflict(s) in queue'
+};
 
-export type TranslationKey = keyof typeof pt
+export type TranslationKey = keyof typeof pt;
 
-const catalogs: Record<Locale, Record<TranslationKey, string>> = { pt, en }
+const catalogs: Record<Locale, Record<TranslationKey, string>> = { pt, en };
 
 export function translate(
   locale: Locale,
   key: TranslationKey,
-  vars?: Record<string, string | number>,
+  vars?: Record<string, string | number>
 ): string {
-  let text = catalogs[locale][key] ?? catalogs.pt[key] ?? key
+  let text = catalogs[locale][key] ?? catalogs.pt[key] ?? key;
   if (vars) {
     for (const [name, value] of Object.entries(vars)) {
-      text = text.replace(new RegExp(`\\{\\{${name}\\}\\}`, 'g'), String(value))
+      text = text.replace(
+        new RegExp(`\\{\\{${name}\\}\\}`, 'g'),
+        String(value)
+      );
     }
   }
-  return text
+  return text;
 }
 
-export function pluralKey(base: string, count: number, locale: Locale): TranslationKey {
-  if (locale === 'en') return base as TranslationKey
-  return (count > 1 ? `${base}Plural` : base) as TranslationKey
+export function pluralKey(
+  base: string,
+  count: number,
+  locale: Locale
+): TranslationKey {
+  if (locale === 'en') return base as TranslationKey;
+  return (count > 1 ? `${base}Plural` : base) as TranslationKey;
 }

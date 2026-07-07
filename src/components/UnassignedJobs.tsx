@@ -1,29 +1,36 @@
-import { useRef } from 'react'
-import { selectUnassignedJobs, useScheduleStore } from '../store/scheduleStore'
-import { useLocaleStore } from '../store/localeStore'
-import { useViewportStore } from '../store/viewportStore'
-import type { Job } from '../types'
+import { useRef } from 'react';
+import { selectUnassignedJobs, useScheduleStore } from '../store/scheduleStore';
+import { useLocaleStore } from '../store/localeStore';
+import { useViewportStore } from '../store/viewportStore';
+import type { Job } from '../types';
 
-function handleDragStart(e: React.DragEvent<HTMLDivElement>, job: Job, draggedRef: React.MutableRefObject<boolean>) {
-  draggedRef.current = true
-  e.dataTransfer.setData('application/json', JSON.stringify({ kind: 'job', jobId: job.id }))
-  e.dataTransfer.effectAllowed = 'copy'
+function handleDragStart(
+  e: React.DragEvent<HTMLDivElement>,
+  job: Job,
+  draggedRef: React.MutableRefObject<boolean>
+) {
+  draggedRef.current = true;
+  e.dataTransfer.setData(
+    'application/json',
+    JSON.stringify({ kind: 'job', jobId: job.id })
+  );
+  e.dataTransfer.effectAllowed = 'copy';
 }
 
 function JobTicket({ job }: { job: Job }) {
-  const openJobEditor = useScheduleStore((s) => s.openJobEditor)
-  const t = useLocaleStore((s) => s.t)
-  const draggedRef = useRef(false)
+  const openJobEditor = useScheduleStore((s) => s.openJobEditor);
+  const t = useLocaleStore((s) => s.t);
+  const draggedRef = useRef(false);
 
   function handleDragEnd() {
     setTimeout(() => {
-      draggedRef.current = false
-    }, 0)
+      draggedRef.current = false;
+    }, 0);
   }
 
   function handleClick() {
-    if (draggedRef.current) return
-    openJobEditor(job.id)
+    if (draggedRef.current) return;
+    openJobEditor(job.id);
   }
 
   return (
@@ -39,19 +46,20 @@ function JobTicket({ job }: { job: Job }) {
       <div className="job-ticket__text">
         <div className="job-ticket__title">{job.title}</div>
         <div className="job-ticket__meta">
-          {job.client} · {job.location} · {t('tray.minutes', { count: job.durationMinutes })}
+          {job.client} · {job.location} ·{' '}
+          {t('tray.minutes', { count: job.durationMinutes })}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function UnassignedJobs() {
-  const jobs = useScheduleStore(selectUnassignedJobs)
-  const openAddJob = useScheduleStore((s) => s.openAddJob)
-  const collapsed = useViewportStore((s) => s.jobTrayCollapsed)
-  const toggleJobTray = useViewportStore((s) => s.toggleJobTray)
-  const t = useLocaleStore((s) => s.t)
+  const jobs = useScheduleStore(selectUnassignedJobs);
+  const openAddJob = useScheduleStore((s) => s.openAddJob);
+  const collapsed = useViewportStore((s) => s.jobTrayCollapsed);
+  const toggleJobTray = useViewportStore((s) => s.toggleJobTray);
+  const t = useLocaleStore((s) => s.t);
 
   return (
     <aside className={`job-tray ${collapsed ? 'job-tray--collapsed' : ''}`}>
@@ -82,14 +90,18 @@ export function UnassignedJobs() {
       </div>
       {collapsed ? (
         <div className="job-tray__collapsed-meta">
-          <span className="job-tray__count job-tray__count--vertical">{jobs.length}</span>
+          <span className="job-tray__count job-tray__count--vertical">
+            {jobs.length}
+          </span>
           <span className="job-tray__collapsed-label">{t('tray.queue')}</span>
         </div>
       ) : (
         <>
           <p className="job-tray__hint">{t('tray.hint')}</p>
           <div className="job-tray__list">
-            {jobs.length === 0 && <div className="job-tray__empty">{t('tray.empty')}</div>}
+            {jobs.length === 0 && (
+              <div className="job-tray__empty">{t('tray.empty')}</div>
+            )}
             {jobs.map((job) => (
               <JobTicket key={job.id} job={job} />
             ))}
@@ -97,5 +109,5 @@ export function UnassignedJobs() {
         </>
       )}
     </aside>
-  )
+  );
 }
