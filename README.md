@@ -59,16 +59,3 @@ src/
 ```
 
 ---
-
-## Design Notes
-
-The visual language follows the style of a modern dispatch console:
-
-- Dark graphite background
-- Amber accent color for operational signals and status indicators
-- JetBrains Mono for operational data and scheduling information
-- Space Grotesk for headings and interface hierarchy
-
-The interface was designed for environments where dispatchers and operators keep the application open throughout the day, prioritizing clarity, information density, and usability during continuous monitoring.
-
----
